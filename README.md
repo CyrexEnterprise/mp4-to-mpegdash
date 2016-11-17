@@ -1,2 +1,5 @@
 # mp4-to-mpegdash
-Script to convert a MP4 file into MPEG-DASH
+Perl script to convert a MP4 video into MPEG-DASH
+
+# Usage
+`$ perl transcode.pl $FILENAME`
