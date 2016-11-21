@@ -23,39 +23,46 @@ sub create_multiple_segments {
 
 sub merge_manifests {
 	my ($filename) = @_;
-
 	my $high_res = 0;
-
+	my $fd;
 	# cleanup extension
 	$filename =~ s/(\w+)\..*$/$1/;
 	$filename =~ s/\W+(\w+)\.*?/$1/;
-
 	# choose the higher resolution
 	for (@{$versions}){
 		$high_res = int($_) if $_ > $high_res;
 	}
+	my $xml = new XML::Simple (KeyAttr => []);
 	# open the base manifest file
-	my $base_manifest = XMLin("$high_res/$filename"."_dash.mpd");
+	my $base_manifest = $xml->XMLin("$high_res/$filename"."_dash.mpd");
 	# update the segments path
 	for my $segment (@{$base_manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{SegmentURL}}){
 		$segment->{media} = "$high_res/".$segment->{media};
 	}
-	# force representations to be a list
-	$base_manifest->{Period}->{AdaptationSet}->{Representation} = [$base_manifest->{Period}->{AdaptationSet}->{Representation}];
+	# set id
+	$base_manifest->{Period}->{AdaptationSet}->{Representation}->{id} = $high_res;
+	# copy the higher representation reference
+	my $high_representation = $base_manifest->{Period}->{AdaptationSet}->{Representation};
+	#force representations to be a list
+	$base_manifest->{Period}->{AdaptationSet}->{Representation} = [];
 	# merge the rest
 	for (@{$versions}){
 		# skip if is the base one
 		next if int($_) eq $high_res;
 		# open the remaining manifest files to merge the representations with the base one
 		my $manifest = XMLin("$_/$filename"."_dash.mpd");
+		# set id
+		$manifest->{Period}->{AdaptationSet}->{Representation}->{id} = $_;
+		# set the proper BaseURL
 		for my $segment (@{$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{SegmentURL}}){
 			$segment->{media} = "$_/".$segment->{media};
 		}
 		push $base_manifest->{Period}->{AdaptationSet}->{Representation}, $manifest->{Period}->{AdaptationSet}->{Representation};
 	}
-	my $fd;
-	open $fd, '>:encoding(iso-8859-1)', "$filename"."_dash.mpd" or die "open($filename"."_dash.mpd): $!";
-	XMLout($base_manifest, OutputFile => $fd);
+	push $base_manifest->{Period}->{AdaptationSet}->{Representation}, $high_representation;
+	delete $base_manifest->{ProgramInformation};
+	open $fd, '>', "$filename"."_dash.mpd" or die "open($filename"."_dash.mpd): $!";
+	$xml->XMLout($base_manifest, OutputFile => $fd, RootName => "MPD", XMLDecl => '<?xml version="1.0"?>' );
 }
 
 my ($filename) = @ARGV;
