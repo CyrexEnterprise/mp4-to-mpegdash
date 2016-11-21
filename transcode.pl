@@ -39,6 +39,7 @@ sub merge_manifests {
 	for my $segment (@{$base_manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{SegmentURL}}){
 		$segment->{media} = "$high_res/".$segment->{media};
 	}
+	$base_manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{Initialization}->{sourceURL} = "$high_res/".$base_manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{Initialization}->{sourceURL};
 	# set id
 	$base_manifest->{Period}->{AdaptationSet}->{Representation}->{id} = $high_res;
 	# copy the higher representation reference
@@ -57,6 +58,7 @@ sub merge_manifests {
 		for my $segment (@{$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{SegmentURL}}){
 			$segment->{media} = "$_/".$segment->{media};
 		}
+		$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{Initialization}->{sourceURL} = "$_/".$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{Initialization}->{sourceURL};
 		push $base_manifest->{Period}->{AdaptationSet}->{Representation}, $manifest->{Period}->{AdaptationSet}->{Representation};
 	}
 	push $base_manifest->{Period}->{AdaptationSet}->{Representation}, $high_representation;
