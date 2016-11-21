@@ -60,9 +60,13 @@ sub merge_manifests {
 		}
 		$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{Initialization}->{sourceURL} = "$_/".$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentList}->{Initialization}->{sourceURL};
 		push $base_manifest->{Period}->{AdaptationSet}->{Representation}, $manifest->{Period}->{AdaptationSet}->{Representation};
+		my $res_filename = "$_/$filename"."_dash.mpd";
+		`rm $res_filename`;
 	}
 	push $base_manifest->{Period}->{AdaptationSet}->{Representation}, $high_representation;
 	delete $base_manifest->{ProgramInformation};
+	my $high_res_filename = "$high_res/$filename"."_dash.mpd";
+	`rm $high_res_filename`;
 	open $fd, '>', "$filename"."_dash.mpd" or die "open($filename"."_dash.mpd): $!";
 	$xml->XMLout($base_manifest, OutputFile => $fd, RootName => "MPD", XMLDecl => '<?xml version="1.0"?>' );
 }
