@@ -10,14 +10,14 @@ my $versions = [ '320', '640', '720', '1280', '1920', '2560' ];
 sub create_multiple_bitrate_versions {
 	my ($filename) = @_;
 	for my $_version (@{$versions}){
-		my $r = `ffmpeg -i $filename -vf scale=$_version:-1:force_original_aspect_ratio=decrease $_version/$filename -y`;
+		my $r = `ffmpeg -i $filename -vf scale=$_version:-1:force_original_aspect_ratio=decrease -x264opts 'keyint=24:min-keyint=24:no-scenecut' -strict -2 $_version/$filename -y`;
 	}
 }
 
 sub create_multiple_segments {
 	my ($filename) = @_;
 	for my $_version (@{$versions}){
-		my $r = `cd $_version; mp4box -dash 1000 -frag 1000 -rap -segment-name segment_ $filename; rm $filename; cd ..`;
+		my $r = `cd $_version; MP4Box -dash 2000 -frag 2000 -rap -frag-rap -profile live $filename#video $filename#audio; rm $filename; cd ..`;
 	}
 }
 

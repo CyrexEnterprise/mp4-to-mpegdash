@@ -10,5 +10,12 @@ Perl script to convert a MP4 video into MPEG-DASH
 FFmpeg https://www.ffmpeg.org/
 MP4Box https://gpac.wp.mines-telecom.fr/mp4box/
 
+## Perl Dependencies
+
+XML::Simple
+
 # Usage
 `$ perl transcode.pl $FILENAME`
+
+# TODO
+Update script to merge manifests.
