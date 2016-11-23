@@ -16,6 +16,3 @@ XML::Simple
 
 # Usage
 `$ perl transcode.pl $FILENAME`
-
-# TODO
-Update script to merge manifests.
