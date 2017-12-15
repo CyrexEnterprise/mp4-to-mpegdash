@@ -18,7 +18,7 @@ sub create_multiple_bitrate_versions {
 	my ($filename) = @_;
 	my $lastVersion = '';
 	for my $_version (@{$versions}){
-		my $r = `ffmpeg -i $filename -vf scale=$_version:-1:force_original_aspect_ratio=decrease -x264opts 'keyint=$config->{keyint}:min-keyint=$config->{keyint}:no-scenecut' -strict -2 -r $config->{framerate} $_version/$filename -y`;
+		my $r = `ffmpeg -i $filename -vf scale=$_version:-2 -x264opts 'keyint=$config->{keyint}:min-keyint=$config->{keyint}:no-scenecut' -strict -2 -r $config->{framerate} $_version/$filename -y`;
 		$lastVersion = $_version;
 	}
 	my $r = `cp $lastVersion/$filename audio/$filename`;
